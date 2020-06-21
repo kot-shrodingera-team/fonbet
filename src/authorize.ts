@@ -1,8 +1,4 @@
-import {
-  awaiter,
-  fireEvent,
-  getElement,
-} from '@kot-shrodingera-team/config/util';
+import { awaiter, getElement } from '@kot-shrodingera-team/config/util';
 import { setReactInputValue } from '@kot-shrodingera-team/config/reactUtils';
 import processCookieModalWinow from './processCookieModalWinow';
 import accountBlocked from './accountChecks';
@@ -12,7 +8,7 @@ import updateBalance from './stakeInfo/updateBalance';
 const authorize = async (): Promise<void> => {
   const lineLoaded = await awaiter(
     // eslint-disable-next-line no-underscore-dangle
-    () => app && app.lineManager && app._ready === true
+    () => typeof app !== 'undefined' && app.lineManager && app._ready === true
   );
   if (!lineLoaded) {
     worker.Helper.WriteLine('Линия так и не загрузилась');
