@@ -5,14 +5,23 @@ const getParameterFromCoupon = (): number => {
   } catch (e) {
     return 0;
   }
-  const parameter = Number(stake.pt);
-  const newParameter = Number(stake.ptNew);
-  if (parameter) {
-    if (newParameter) {
-      return newParameter;
+  const parameter = stake.pt;
+
+  if (typeof parameter !== 'undefined') {
+    const newParameter = stake.ptNew;
+    const realParameter =
+      typeof newParameter !== 'undefined'
+        ? Number(newParameter)
+        : Number(parameter);
+    if (Number.isNaN(realParameter)) {
+      worker.Helper.WriteLine(
+        `Некорректный параметр в фонбете: ${realParameter}`
+      );
+      return -6666;
     }
-    return parameter;
+    return realParameter;
   }
+
   // Фиксим корявый фон, который не понимает, что эти исходы это Over/Under (0.5)
 
   // 1 забьёт
