@@ -71,13 +71,28 @@ const doStake = (): boolean => {
     return false;
   }
 
-  if (worker.ShoulderNumber === 1) {
+  if (worker.StakeAcceptRuleShoulder === 0) {
+    worker.Helper.WriteLine(
+      'Устанавливаем режим принятия ставок только с текущим коэффициентом'
+    );
+    const set = app.headerApi.settings();
+    set.takeUpBets = false;
+    app.settingsApply(set, 'takeUpBets');
+    set.takeChangedBets = false;
+    app.settingsApply(set, 'takeChangedBets');
+  } else if (worker.StakeAcceptRuleShoulder === 1) {
+    worker.Helper.WriteLine(
+      'Устанавливаем режим принятия ставок с повышением коэффициента'
+    );
     const set = app.headerApi.settings();
     set.takeUpBets = true;
     app.settingsApply(set, 'takeUpBets');
     set.takeChangedBets = false;
     app.settingsApply(set, 'takeChangedBets');
-  } else {
+  } else if (worker.StakeAcceptRuleShoulder === 2) {
+    worker.Helper.WriteLine(
+      'Устанавливаем режим принятия ставок с любым изменением коэффициента'
+    );
     const set = app.headerApi.settings();
     set.takeUpBets = true;
     app.settingsApply(set, 'takeUpBets');
