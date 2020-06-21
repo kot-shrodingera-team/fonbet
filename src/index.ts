@@ -10,6 +10,7 @@ import authorize from './authorize';
 import showStake from './showStake';
 import clearStakeData from './stakeData/clearStakeData';
 import clearDevStuff from './devStuff/clearDevStuff';
+import afterSuccesfulStake from './callbacks/afterSuccesfulStake';
 
 clearStakeData();
 clearDevStuff();
@@ -31,7 +32,8 @@ worker.SetCallBacks(
   setStakeSum,
   doStake,
   checkCouponLoading,
-  checkStakeStatus
+  checkStakeStatus,
+  afterSuccesfulStake
 );
 worker.SetFastCallback(FastLoad);
 
