@@ -1,3 +1,5 @@
+import WorkerBetObject from '@kot-shrodingera-team/config/workerBetObject';
+
 const checkBet = (log = false): boolean => {
   const error = (message: string): boolean => {
     worker.Helper.WriteLine(message);
