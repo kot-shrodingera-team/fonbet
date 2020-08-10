@@ -1,6 +1,3 @@
 module.exports = {
-  extends: './node_modules/@kot-shrodingera-team/config/.eslintrc',
-  globals: {
-    app: false,
-  },
+  extends: '@kot-shrodingera-team/eslint-config-germes/.eslintrc',
 };

@@ -1,33 +1,18 @@
-import './workerCheck';
+import '@kot-shrodingera-team/worker-declaration/workerCheck';
 import './bookmakerApi';
-import { sleep } from '@kot-shrodingera-team/config/util';
-import getStakeInfo from './callbacks/getStakeInfo';
-import setStakeSum from './callbacks/setStakeSum';
-import doStake from './callbacks/doStake';
-import checkCouponLoading from './callbacks/checkCouponLoading';
-import checkStakeStatus from './callbacks/checkStakeStatus';
-import authorize from './authorize';
-import showStake from './showStake';
-import clearStakeData from './stakeData/clearStakeData';
-import clearDevStuff from './devStuff/clearDevStuff';
-import afterSuccesfulStake from './callbacks/afterSuccesfulStake';
-
-clearStakeData();
-clearDevStuff();
-
-const FastLoad = async (): Promise<void> => {
-  worker.Helper.WriteLine('Быстрая загрузка');
-  clearStakeData();
-  if (window.location.pathname !== '/live/') {
-    worker.Helper.WriteLine('Переходим на лайв');
-    window.location.href = `${window.location.origin}/live/`;
-    return;
-  }
-  showStake();
-};
+import { log } from '@kot-shrodingera-team/germes-utils';
+import getStakeInfo from './worker_callbacks/getStakeInfo';
+import setStakeSum from './worker_callbacks/setStakeSum';
+import doStake from './worker_callbacks/doStake';
+import checkCouponLoading from './worker_callbacks/checkCouponLoading';
+import checkStakeStatus from './worker_callbacks/checkStakeStatus';
+import showStake from './show_stake';
+import afterSuccesfulStake from './worker_callbacks/afterSuccesfulStake';
+import fastLoad from './fastLoad';
+import initialize from './initialization';
 
 worker.SetCallBacks(
-  console.log,
+  log,
   getStakeInfo,
   setStakeSum,
   doStake,
@@ -35,15 +20,12 @@ worker.SetCallBacks(
   checkStakeStatus,
   afterSuccesfulStake
 );
-worker.SetFastCallback(FastLoad);
+worker.SetFastCallback(fastLoad);
 
 (async (): Promise<void> => {
-  worker.Helper.WriteLine('Начали');
-  // await domLoaded();
-  await sleep(3000);
-  // console.log('DOM загружен');
+  log(`Загрузка страницы`, 'steelblue');
   if (!worker.IsShowStake) {
-    authorize();
+    initialize();
   } else {
     showStake();
   }
