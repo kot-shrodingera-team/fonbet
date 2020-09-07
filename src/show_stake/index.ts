@@ -6,8 +6,7 @@ import {
 } from '../initialization/accountChecks';
 import getStakeCount from '../stake_info/getStakeCount';
 import checkBet from '../check_bet';
-import checkAuth from '../stake_info/checkAuth';
-import authCheckReady from '../initialization/authCheckReady';
+import checkAuth, { authCheckReady } from '../stake_info/checkAuth';
 import clearCoupon from './clearCoupon';
 import appLoaded from '../initialization/appLoaded';
 import processCookieModalWindow from '../initialization/processCookieModalWinow';

@@ -29,11 +29,15 @@ const check = (): boolean => {
     if (!errorResultStartTime) {
       errorResultStartTime = new Date();
     } else {
-      const timePassedSinceErrorResult =
-        new Date().getTime() - errorResultStartTime.getTime();
+      const now = new Date().getTime();
+      const timePassedSinceErrorResult = now - errorResultStartTime.getTime();
       if (timePassedSinceErrorResult > 5000) {
         log(
           `Обработка ставки завершена (состояние error более 5 секунд)`,
+          'orange'
+        );
+        log(
+          `${now} - ${errorResultStartTime.getTime()} = ${timePassedSinceErrorResult} > 5000`,
           'orange'
         );
         return false;

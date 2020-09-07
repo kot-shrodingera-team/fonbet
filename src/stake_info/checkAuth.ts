@@ -1,7 +1,14 @@
-import checkAuthGenerator from '@kot-shrodingera-team/germes-generators/stake_info/checkAuth';
+import checkAuthGenerator, {
+  authStateReadyGenerator,
+} from '@kot-shrodingera-team/germes-generators/stake_info/checkAuth';
+
+export const authCheckReady = authStateReadyGenerator({
+  noAuthElementSelector: '.header__login-head a.header__link',
+  authElementSelector: '.header__login-label',
+});
 
 const checkAuth = checkAuthGenerator({
-  accountSelector: '.header__login-label',
+  authElementSelector: '.header__login-label',
 });
 
 export default checkAuth;

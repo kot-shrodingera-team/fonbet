@@ -3,6 +3,7 @@ import doStakeGenerator from '@kot-shrodingera-team/germes-generators/worker_cal
 import getCoefficient from '../stake_info/getCoefficient';
 import { clearDoStakeTime } from '../stake_info/doStakeTime';
 import { accountBlocked } from '../initialization/accountChecks';
+import { clearErrorResultStartTime } from './checkCouponLoading';
 
 // Можно заинжектить клонирование нового купона в переменную и следить за изменением статуса в нём
 // Можно просто смотреть в app.couponManager._list[0].state
@@ -26,7 +27,7 @@ import { accountBlocked } from '../initialization/accountChecks';
 //   }
 // };
 
-const preAction = (): boolean => {
+const preCheck = (): boolean => {
   const errorSpan = document.querySelector(
     '.error-box--3tiP1 .text-area--2GSj9'
   );
@@ -48,12 +49,13 @@ const preAction = (): boolean => {
   }
 
   clearDoStakeTime();
+  clearErrorResultStartTime();
 
   return true;
 };
 
 const doStake = doStakeGenerator({
-  preAction,
+  preCheck,
   doStakeButtonSelector: '.button--54u30.normal-bet--3r-PV',
   errorClasses: [
     {
