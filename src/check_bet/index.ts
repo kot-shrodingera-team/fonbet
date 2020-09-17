@@ -6,7 +6,7 @@ const checkBet = (logInfo = false): boolean => {
     log(message, 'crimson');
     return false;
   };
-  const { stakeName, eventName } = app.couponManager.newCoupon.stakes[0];
+  const { stakeName, eventName, pt } = app.couponManager.newCoupon.stakes[0];
   const { market, odd, param, period, subperiod, overtimeType } = JSON.parse(
     worker.ForkObj
   ) as WorkerBetObject;
@@ -19,6 +19,35 @@ const checkBet = (logInfo = false): boolean => {
       `${market}|${odd}|${param}|${period}|${subperiod}|${overtimeType}`;
     log(message, 'lightgrey');
   }
+
+  if (worker.SportId === 2 && /^ML[12]$/i.test(odd) && subperiod) {
+    const eventRegex = /^(\d+)-й сет (.*) – (.*)$/i;
+    const eventMatch = eventName.match(eventRegex);
+    if (!eventMatch) {
+      return error('Маркет не соответствует победе в гейме сета');
+    }
+    const [set, teamOne, teamTwo] = eventMatch.slice(1);
+    const stakeRegex = /^Гейм %P - (.*)$/i;
+    const stakeMatch = stakeName.match(stakeRegex);
+    const [team] = stakeMatch.slice(1);
+    if (!stakeMatch) {
+      return error('Ставка не соответствует победе в гейме сета');
+    }
+    if (Number(set) !== period) {
+      return error('Открыта победа не на тот сет');
+    }
+    if (Number(pt) !== Number(subperiod)) {
+      return error('Открыта победа не на тот гейм');
+    }
+    if (/^ML1$/i.test(odd) && team !== teamOne) {
+      return error('Открыта победа 1');
+    }
+    if (/^ML2$/i.test(odd) && team !== teamTwo) {
+      return error('Открыта победа 2');
+    }
+    return true;
+  }
+
   if (/^(ML1|1)$/i.test(odd)) {
     if (!/^Поб 1/i.test(stakeName)) {
       return error('Открыта не победа 1');
