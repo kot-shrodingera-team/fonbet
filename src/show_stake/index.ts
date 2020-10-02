@@ -6,7 +6,7 @@ import {
 } from '../initialization/accountChecks';
 import getStakeCount from '../stake_info/getStakeCount';
 import checkBet from '../check_bet';
-import checkAuth, { authCheckReady } from '../stake_info/checkAuth';
+import checkAuth, { authStateReady } from '../stake_info/checkAuth';
 import clearCoupon from './clearCoupon';
 import appLoaded from '../initialization/appLoaded';
 import processCookieModalWindow from '../initialization/processCookieModalWinow';
@@ -33,7 +33,7 @@ const showStake = async (): Promise<void> => {
     return;
   }
 
-  await authCheckReady();
+  await authStateReady();
   worker.Islogin = checkAuth();
   worker.JSLogined();
   if (!worker.Islogin) {
