@@ -9,6 +9,13 @@ export const clearErrorResultStartTime = (): void => {
 };
 
 const check = (): boolean => {
+  const now = new Date();
+  const doStakeTime = getDoStakeTime();
+  const timePassedSinceDoStake = now.getTime() - doStakeTime.getTime();
+  if (timePassedSinceDoStake < 1000) {
+    log(`Обработка ставки (задержка)`, 'tan');
+    return true;
+  }
   // eslint-disable-next-line no-underscore-dangle
   const { state } = app.couponManager._list[0];
   if (state === 'register') {
@@ -29,8 +36,8 @@ const check = (): boolean => {
     if (!errorResultStartTime) {
       errorResultStartTime = new Date();
     } else {
-      const now = new Date().getTime();
-      const timePassedSinceErrorResult = now - errorResultStartTime.getTime();
+      const timePassedSinceErrorResult =
+        now.getTime() - errorResultStartTime.getTime();
       if (timePassedSinceErrorResult > 5000) {
         log(
           `Обработка ставки завершена (состояние error более 5 секунд)`,
