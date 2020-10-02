@@ -39,7 +39,7 @@ const checkStakeStatus = (): boolean => {
     } else if (/Изменена котировка на событие/i.test(errorText)) {
       log('Ставка не принята (изменена котировка)', 'tomato');
     } else {
-      log(`Ставка не принята (${errorText})`);
+      log(`Ставка не принята (${errorText})`, 'tomato');
     }
     const errorOkButton = document.querySelector(
       '.error-box--3tiP1 .button--54u30'
