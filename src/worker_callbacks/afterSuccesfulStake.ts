@@ -2,7 +2,7 @@ import { log } from '@kot-shrodingera-team/germes-utils';
 
 const afterSuccesfulStake = (): void => {
   const lastStakeCoefficient = document.querySelector(
-    '.coupon__table-stake--rkHNN, .coupon__info-text--WpI3L'
+    '.coupon__table-stake--rkHNN, .coupon__info-item--3IfP_[title="Общий коэффициент"] .coupon__info-text--WpI3L'
   );
   if (!lastStakeCoefficient) {
     log(
