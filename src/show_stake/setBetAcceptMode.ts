@@ -10,11 +10,17 @@ const setBetAcceptMode = (): boolean => {
     set.takeUpBets = false;
     set.takeChangedBets = false;
   } else if (worker.StakeAcceptRuleShoulder === 1) {
-    log('Устанавливаем режим принятия ставок с повышением коэффициента');
+    log(
+      'Устанавливаем режим принятия ставок с повышением коэффициента',
+      'orange'
+    );
     set.takeUpBets = true;
     set.takeChangedBets = false;
   } else if (worker.StakeAcceptRuleShoulder === 2) {
-    log('Устанавливаем режим принятия ставок с любым изменением коэффициента');
+    log(
+      'Устанавливаем режим принятия ставок с любым изменением коэффициента',
+      'orange'
+    );
     set.takeUpBets = true;
     set.takeChangedBets = true;
   }
