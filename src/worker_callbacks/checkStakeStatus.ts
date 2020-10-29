@@ -6,7 +6,8 @@ import { accountBlocked } from '../initialization/accountChecks';
 
 const checkStakeStatus = (): boolean => {
   // eslint-disable-next-line no-underscore-dangle
-  const { state } = app.couponManager._list[0];
+  // const { state } = app.couponManager._list[0];
+  const { state } = window.currentCoupon;
   if (state === 'register') {
     log('Ставка принята', 'green');
     updateBalance();

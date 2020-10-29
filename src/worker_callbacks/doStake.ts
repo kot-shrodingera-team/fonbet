@@ -4,28 +4,26 @@ import getCoefficient from '../stake_info/getCoefficient';
 import { clearDoStakeTime } from '../stake_info/doStakeTime';
 import { accountBlocked } from '../initialization/accountChecks';
 import { clearErrorResultStartTime } from './checkCouponLoading';
+import { FonbetCoupon } from '../bookmakerApi';
 
 // Можно заинжектить клонирование нового купона в переменную и следить за изменением статуса в нём
 // Можно просто смотреть в app.couponManager._list[0].state
 
-// let cloneCouponToPlaceInjected = false;
+let cloneCouponToPlaceInjected = false;
 
-// const injectCloneCoupon = (): void => {
-//   if (!cloneCouponToPlaceInjected) {
-//     app.couponManager.newCoupon.cloneCouponToPlace = ((cloneCouponToPlace) => {
-//       return function injectedCloneCouponToPlace(
-//         ...args: unknown[]
-//       ): FonbetCoupon {
-//         window.stakeData.currentCoupon = cloneCouponToPlace.apply(
-//           this,
-//           ...args
-//         );
-//         return window.stakeData.currentCoupon;
-//       };
-//     })(app.couponManager.newCoupon.cloneCouponToPlace);
-//     cloneCouponToPlaceInjected = true;
-//   }
-// };
+const injectCloneCoupon = (): void => {
+  if (!cloneCouponToPlaceInjected) {
+    app.couponManager.newCoupon.cloneCouponToPlace = ((cloneCouponToPlace) => {
+      return function injectedCloneCouponToPlace(
+        ...args: unknown[]
+      ): FonbetCoupon {
+        window.currentCoupon = cloneCouponToPlace.apply(this, ...args);
+        return window.currentCoupon;
+      };
+    })(app.couponManager.newCoupon.cloneCouponToPlace);
+    cloneCouponToPlaceInjected = true;
+  }
+};
 
 const preCheck = (): boolean => {
   const errorSpan = document.querySelector(
@@ -48,6 +46,7 @@ const preCheck = (): boolean => {
     return false;
   }
 
+  injectCloneCoupon();
   clearDoStakeTime();
   clearErrorResultStartTime();
 

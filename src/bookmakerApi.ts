@@ -25,7 +25,7 @@ interface FonbetStake {
   eventName: string;
 }
 
-interface FonbetCoupon {
+export interface FonbetCoupon {
   state: string;
   extra: {
     requestId: number;
@@ -83,6 +83,9 @@ interface FonbetApi {
 
 declare global {
   const app: FonbetApi;
+  interface Window {
+    currentCoupon: FonbetCoupon;
+  }
 }
 
 export default {};

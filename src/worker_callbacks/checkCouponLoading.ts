@@ -17,7 +17,8 @@ const check = (): boolean => {
     return true;
   }
   // eslint-disable-next-line no-underscore-dangle
-  const { state } = app.couponManager._list[0];
+  // const { state } = app.couponManager._list[0];
+  const { state } = window.currentCoupon;
   if (state === 'register') {
     log('Обработка ставки завершена (register)', 'orange');
     return false;
