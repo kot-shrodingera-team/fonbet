@@ -13,7 +13,7 @@ const checkBet = (logInfo = false): boolean => {
 
   if (logInfo) {
     const message =
-      `Маркет: "${eventName}"\n` +
+      `Маркет: "${eventName.replace('%P', pt)}"\n` +
       `Ставка: "${stakeName}"\n` +
       `Роспись в боте: "${worker.BetName.trim()}"\n` +
       `${market}|${odd}|${param}|${period}|${subperiod}|${overtimeType}`;
