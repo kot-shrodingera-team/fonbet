@@ -2,7 +2,7 @@ import { log } from '@kot-shrodingera-team/germes-utils';
 
 export const checkAccountBlocked = (): boolean => {
   if (worker.GetSessionData('FonbetCheck') === 'false') {
-    return true;
+    return false;
   }
   return app.session.attributes.liveBlocked;
 };
