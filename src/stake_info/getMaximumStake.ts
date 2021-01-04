@@ -18,7 +18,11 @@ const getMaximumStake = (): number => {
   if (maximumStake !== -1) {
     return maximumStake;
   }
-  return getMaximumStakeFromCoupon();
+  const maximumStakeFromCoupon = getMaximumStakeFromCoupon();
+  if (worker.Currency === 'RUR') {
+    return maximumStakeFromCoupon - 100;
+  }
+  return maximumStakeFromCoupon;
 };
 
 export default getMaximumStake;
