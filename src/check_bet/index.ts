@@ -79,12 +79,12 @@ const checkBet = (logInfo = false): boolean => {
     }
   }
   if (/^F1$/i.test(odd)) {
-    if (!/^1/i.test(stakeName)) {
+    if (!/^Фора 1/i.test(stakeName)) {
       return error('Открыта не фора на 1');
     }
   }
   if (/^F2$/i.test(odd)) {
-    if (!/^2/i.test(stakeName)) {
+    if (!/^Фора 2/i.test(stakeName)) {
       return error('Открыта не фора на 2');
     }
   }
