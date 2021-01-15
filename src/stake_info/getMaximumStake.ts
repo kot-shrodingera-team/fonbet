@@ -20,7 +20,10 @@ const getMaximumStake = (): number => {
   }
   const maximumStakeFromCoupon = getMaximumStakeFromCoupon();
   if (worker.Currency === 'RUR') {
-    return maximumStakeFromCoupon - 100;
+    if (maximumStakeFromCoupon >= 200) {
+      return maximumStakeFromCoupon - 100;
+    }
+    return maximumStakeFromCoupon;
   }
   return maximumStakeFromCoupon;
 };
