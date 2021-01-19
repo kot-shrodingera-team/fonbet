@@ -5,7 +5,7 @@ import {
   accountBlocked,
 } from '../initialization/accountChecks';
 import getStakeCount from '../stake_info/getStakeCount';
-import checkBet from '../check_bet';
+// import checkBet from '../check_bet';
 import checkAuth, { authStateReady } from '../stake_info/checkAuth';
 import clearCoupon from './clearCoupon';
 import appLoaded from '../initialization/appLoaded';
@@ -106,10 +106,10 @@ const showStake = async (): Promise<void> => {
   }
 
   log('Купон открыт', 'steelblue');
-  if (!checkBet(true)) {
-    jsFail('Ставка не соответствует росписи');
-    return;
-  }
+  // if (!checkBet(true)) {
+  //   jsFail('Ставка не соответствует росписи');
+  //   return;
+  // }
   setBetAcceptMode();
   log('Ставка успешно открыта', 'green');
   couponOpenning = false;
