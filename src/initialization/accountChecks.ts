@@ -1,6 +1,9 @@
-import { log } from '@kot-shrodingera-team/germes-utils';
+import { getWorkerParameter, log } from '@kot-shrodingera-team/germes-utils';
 
 export const checkAccountBlocked = (): boolean => {
+  if (getWorkerParameter('dontCheckBlocked') === true) {
+    return false;
+  }
   if (worker.GetSessionData('FonbetCheck') === 'false') {
     return false;
   }
@@ -8,6 +11,9 @@ export const checkAccountBlocked = (): boolean => {
 };
 
 export const accountBlocked = (): void => {
+  if (getWorkerParameter('dontCheckBlocked') === true) {
+    return;
+  }
   const { payBlocked } = app.session.attributes;
   const message = `Аккаунт Фонбет заблокирован! ${
     payBlocked
