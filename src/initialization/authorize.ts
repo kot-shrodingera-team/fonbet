@@ -1,4 +1,5 @@
 import authorizeGenerator from '@kot-shrodingera-team/germes-generators/initialization/authorize';
+import { balanceReady, updateBalance } from '../stake_info/getBalance';
 import afterSuccesfulLogin from './afterSuccesfulLogin';
 
 const authorize = authorizeGenerator({
@@ -11,6 +12,11 @@ const authorize = authorizeGenerator({
   submitButtonSelector: '#auth_form button[type="submit"]',
   inputType: 'react',
   afterSuccesfulLogin,
+  loginedWait: {
+    balanceReady,
+    loginedSelector: '.header__login-label',
+    updateBalance,
+  },
 });
 
 export default authorize;
