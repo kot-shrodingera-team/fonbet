@@ -68,8 +68,11 @@ const showStake = async (): Promise<void> => {
     return;
   }
 
-  // eslint-disable-next-line no-underscore-dangle
-  const evnt = app.lineManager._eventDict[Number(worker.EventId)];
+  const evnt = await awaiter(
+    () => app.lineManager.findEvent(Number(worker.EventId)),
+    5000,
+    100
+  );
   if (!evnt) {
     jsFail('Событие не найдено');
     return;

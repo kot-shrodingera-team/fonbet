@@ -46,6 +46,7 @@ interface FonbetApi {
     _eventDict: {
       [key: number]: FonbetEvent;
     };
+    findEvent: (eventId: number) => FonbetEvent;
   };
   loggedIn: () => boolean;
   session: {
