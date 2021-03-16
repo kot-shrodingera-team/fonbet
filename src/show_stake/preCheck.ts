@@ -47,6 +47,31 @@ const preCheck = async (): Promise<void> => {
   if (!appLoaded()) {
     throw new JsFailError('API не загрузилось');
   }
+
+  const wideCouponButton = document.querySelector(
+    '[title="Широкая лента купонов"]'
+  ) as HTMLElement;
+  if (wideCouponButton) {
+    log('Включена узкая лента купонов. Переключаем на широкую', 'orange');
+    wideCouponButton.click();
+    const narrowCouponButton = await getElement(
+      '[title="Узкая лента купонов"]'
+    );
+    if (!narrowCouponButton) {
+      throw new JsFailError(
+        'Не удалось переключиться на широкую ленту купонов'
+      );
+    }
+    log('Переключились на широкую ленту купонов', 'steelblue');
+  } else {
+    const narrowCouponButton = await getElement(
+      '[title="Узкая лента купонов"]'
+    );
+    if (!narrowCouponButton) {
+      throw new JsFailError('Ошибка определения широкой/узкой ленты купонов');
+    }
+    log('Выбрана широкая лента купонов', 'steelblue');
+  }
 };
 
 export default preCheck;
