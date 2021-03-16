@@ -5,8 +5,8 @@ import checkAuthGenerator, {
 export const authStateReady = authStateReadyGenerator({
   noAuthElementSelector: '.header__login-head a.header__link',
   authElementSelector: '.header__login-label',
-  logging: true,
   // maxDelayAfterNoAuthElementAppeared: 0,
+  logging: true,
 });
 
 const checkAuth = checkAuthGenerator({

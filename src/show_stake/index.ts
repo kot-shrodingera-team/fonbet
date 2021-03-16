@@ -1,122 +1,64 @@
-import { log, awaiter, getElement } from '@kot-shrodingera-team/germes-utils';
-import { updateBalance, balanceReady } from '../stake_info/getBalance';
-import {
-  checkAccountBlocked,
-  accountBlocked,
-} from '../initialization/accountChecks';
-import getStakeCount from '../stake_info/getStakeCount';
-// import checkBet from '../check_bet';
+import { checkUrl, log } from '@kot-shrodingera-team/germes-utils';
+import { updateBalance } from '../stake_info/getBalance';
 import checkAuth, { authStateReady } from '../stake_info/checkAuth';
 import clearCoupon from './clearCoupon';
-import appLoaded from '../initialization/appLoaded';
-import processCookieModalWindow from '../initialization/processCookieModalWinow';
 import setBetAcceptMode from './setBetAcceptMode';
+import JsFailError from './errors/jsFailError';
+import NewUrlError from './errors/newUrlError';
+import openBet from './openBet';
+import openEvent from './openEvent';
+import preCheck from './preCheck';
 
 let couponOpenning = false;
 
 export const isCouponOpenning = (): boolean => couponOpenning;
 
-const jsFail = (message = ''): void => {
-  if (message) {
-    log(message, 'red');
-  }
-  couponOpenning = false;
-  worker.JSFail();
-};
-
 const showStake = async (): Promise<void> => {
+  localStorage.setItem('couponOpening', '1');
   couponOpenning = true;
+  try {
+    if (!checkUrl()) {
+      log('Открыта не страница конторы (или зеркала)', 'crimson');
+      window.location.href = new URL(worker.BookmakerMainUrl).href;
+      throw new NewUrlError('Открывает страницу БК');
+    }
 
-  await awaiter(appLoaded);
-  if (!appLoaded()) {
-    jsFail('API не загрузилось');
-    return;
+    await authStateReady();
+    worker.Islogin = checkAuth();
+    worker.JSLogined();
+    if (!worker.Islogin) {
+      throw new JsFailError('Нет авторизации');
+    }
+    log('Есть авторизация', 'steelblue');
+
+    const couponCleared = await clearCoupon();
+    if (!couponCleared) {
+      throw new JsFailError('Не удалось очистить купон');
+    }
+    updateBalance();
+
+    await preCheck();
+
+    await openEvent();
+
+    await openBet();
+
+    log('Ставка успешно открыта', 'green');
+    setBetAcceptMode();
+    couponOpenning = false;
+    localStorage.setItem('couponOpening', '0');
+    worker.JSStop();
+  } catch (error) {
+    if (error instanceof JsFailError) {
+      log(error.message, 'red');
+      couponOpenning = false;
+      localStorage.setItem('couponOpening', '0');
+      worker.JSFail();
+    }
+    if (error instanceof NewUrlError) {
+      log(error.message, 'orange');
+    }
   }
-
-  await authStateReady();
-  worker.Islogin = checkAuth();
-  worker.JSLogined();
-  if (!worker.Islogin) {
-    jsFail('Нет авторизации');
-    return;
-  }
-  if (checkAccountBlocked()) {
-    accountBlocked();
-    jsFail();
-    return;
-  }
-  processCookieModalWindow();
-
-  await balanceReady();
-  updateBalance();
-
-  if (app.accountManager.needVerification()) {
-    log('Необходима верификация', 'orange');
-  }
-
-  const couponCleared = await clearCoupon();
-  if (!couponCleared) {
-    worker.JSFail();
-    return;
-  }
-
-  const factor = Number(worker.BetId);
-  if (Number.isNaN(factor)) {
-    jsFail(
-      `Некорректные мета-данные по ставке. Сообщите в ТП id вилки: "${worker.ForkId}"`
-    );
-    return;
-  }
-
-  const evnt = await awaiter(
-    () => app.lineManager.findEvent(Number(worker.EventId)),
-    5000,
-    100
-  );
-  if (!evnt) {
-    jsFail('Событие не найдено');
-    return;
-  }
-
-  // eslint-disable-next-line no-underscore-dangle
-  const line = evnt._factors._factors[factor];
-  if (!line) {
-    jsFail('Линия не найдена');
-    return;
-  }
-
-  app.couponManager.newCoupon.newAddStake(
-    'live',
-    'live',
-    evnt.rootId,
-    evnt.id,
-    line.id,
-    line.p
-  );
-
-  const betAdded = await awaiter(() => getStakeCount() === 1);
-  if (!betAdded) {
-    jsFail('Ставка не попала в купон');
-    return;
-  }
-
-  const minLoaded = await getElement(
-    '._min-max--3iR23 .info-block__value--3QhCK:nth-child(1)'
-  );
-  if (!minLoaded) {
-    jsFail('Минимум не появился');
-    return;
-  }
-
-  log('Купон открыт', 'steelblue');
-  // if (!checkBet(true)) {
-  //   jsFail('Ставка не соответствует росписи');
-  //   return;
-  // }
-  setBetAcceptMode();
-  log('Ставка успешно открыта', 'green');
-  couponOpenning = false;
-  worker.JSStop();
 };
 
 export default showStake;

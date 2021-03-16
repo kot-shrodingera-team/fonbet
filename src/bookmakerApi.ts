@@ -85,7 +85,21 @@ interface FonbetApi {
 declare global {
   const app: FonbetApi;
   interface Window {
-    currentCoupon: FonbetCoupon;
+    germesData: {
+      doStakeTime: Date;
+      betProcessingStep: string;
+      betProcessingAdditionalInfo: string;
+      limits: {
+        minimumStake: number;
+        maximumStake: number;
+      };
+
+      currentBet: {
+        eventName: string;
+        betName: string;
+        lastSameBetCount: number;
+      };
+    };
   }
 }
 

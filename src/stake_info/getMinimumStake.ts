@@ -1,22 +1,43 @@
-import getMinimumStakeGenerator from '@kot-shrodingera-team/germes-generators/stake_info/getMinimumStake';
-
-let minimumStake = -1;
+import getMinimumStakeGenerator, {
+  minimumStakeReadyGenerator,
+} from '@kot-shrodingera-team/germes-generators/stake_info/getMinimumStake';
 
 export const setMinimumStake = (newMinimumStake: number): void => {
-  minimumStake = newMinimumStake;
+  window.germesData.limits.minimumStake = newMinimumStake;
 };
 export const clearMinimumStake = (): void => {
-  minimumStake = -1;
+  window.germesData.limits.minimumStake = undefined;
 };
+
+export const minimumStakeReady = minimumStakeReadyGenerator({
+  minimumStakeElementSelector:
+    '[class*="_min-max"] [class*="info-block__value"]:nth-child(1)',
+  // minimumStakeRegex: /(\d+(?:\.\d+)?)/,
+  // replaceDataArray: [
+  //   {
+  //     searchValue: '',
+  //     replaceValue: '',
+  //   },
+  // ],
+  // removeRegex: /[\s,']/g,
+});
 
 const getMinimumStakeFromCoupon = getMinimumStakeGenerator({
   minimumStakeElementSelector:
-    '._min-max--3iR23 .info-block__value--3QhCK:nth-child(1)',
+    '[class*="_min-max"] [class*="info-block__value"]:nth-child(1)',
+  // minimumStakeRegex: /(\d+(?:\.\d+)?)/,
+  // replaceDataArray: [
+  //   {
+  //     searchValue: '',
+  //     replaceValue: '',
+  //   },
+  // ],
+  // removeRegex: /[\s,']/g,
 });
 
 const getMinimumStake = (): number => {
-  if (minimumStake !== -1) {
-    return minimumStake;
+  if (typeof window.germesData.limits.minimumStake !== 'undefined') {
+    return window.germesData.limits.minimumStake;
   }
   return getMinimumStakeFromCoupon();
 };

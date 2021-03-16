@@ -13,13 +13,13 @@ import getParameter from '../stake_info/getParameter';
 
 const preAction = (): boolean => {
   const errorSpan = document.querySelector(
-    '.error-box--3tiP1 .text-area--2GSj9'
+    '[class*="error-box"] [class*="text-area"]'
   );
 
   if (errorSpan) {
     log(`Висит ошибка: "${errorSpan.textContent.trim()}"`, 'tan');
     const errorOkButton = document.querySelector(
-      '.error-box--3tiP1 .button--54u30'
+      '[class*="error-box"] [class*="button"]'
     ) as HTMLElement;
     if (!errorOkButton) {
       log('Не найдена кнопка закрытия', 'crimson');
@@ -30,7 +30,7 @@ const preAction = (): boolean => {
   }
 
   const acceptChangesButton = document.querySelector(
-    '.button-accept--2SBJ-._enabled--1njsj'
+    '[class*="button-accept"][class*="_enabled"]'
   ) as HTMLElement;
   if (acceptChangesButton) {
     acceptChangesButton.click();

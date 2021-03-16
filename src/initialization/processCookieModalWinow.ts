@@ -1,17 +1,17 @@
 import { log } from '@kot-shrodingera-team/germes-utils';
 
 const processCookieModalWindow = (): void => {
-  const cookieModalWindow = document.querySelector('#cookie_policy_popup');
+  const cookieModalWindow = document.querySelector('._cookie-policy');
   if (cookieModalWindow) {
     log('Есть окно с сообщением о Cookies', 'steelblue');
     const acceptCookies = document.querySelector(
-      'a[class*="modal-window__button"]'
+      '._cookie-policy ~ .modal-window__button-area a.modal-window__button'
     ) as HTMLElement;
     if (acceptCookies) {
+      log('Нажимаем кнопку "Согласен"', 'orange');
       acceptCookies.click();
-      log('Нажали "Принять Coockies"', 'orange');
     } else {
-      log('Нет кнопки "Принять Cookies"', 'crimson');
+      log('Не найдена кнопка "Согласен"', 'crimson');
     }
   }
 };

@@ -11,6 +11,7 @@ const initialize = initializeGenerator({
   updateBalance,
   authorize,
   afterSuccesfulLogin,
+  // authStateReadyTimeout: 5000,
 });
 
 export default initialize;

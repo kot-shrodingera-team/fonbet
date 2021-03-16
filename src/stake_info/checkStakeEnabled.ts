@@ -16,9 +16,19 @@ const preCheck = (): boolean => {
 const checkStakeEnabled = checkStakeEnabledGenerator({
   preCheck,
   getStakeCount,
+  // betCheck: {
+  //   selector: '',
+  //   errorClasses: [
+  //     {
+  //       className: '',
+  //       message: '',
+  //     },
+  //   ],
+  // },
   errorsCheck: [
     {
-      selector: '.overlay-unavailable--28rSG',
+      selector: '[class*="overlay-unavailable"]',
+      // message: '',
     },
   ],
 });
