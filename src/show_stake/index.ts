@@ -1,4 +1,8 @@
-import { checkUrl, log } from '@kot-shrodingera-team/germes-utils';
+import {
+  checkUrl,
+  getWorkerParameter,
+  log,
+} from '@kot-shrodingera-team/germes-utils';
 import { updateBalance } from '../stake_info/getBalance';
 import checkAuth, { authStateReady } from '../stake_info/checkAuth';
 import clearCoupon from './clearCoupon';
@@ -8,6 +12,7 @@ import NewUrlError from './errors/newUrlError';
 import openBet from './openBet';
 import openEvent from './openEvent';
 import preCheck from './preCheck';
+import getMaximumStake from '../stake_info/getMaximumStake';
 
 let couponOpenning = false;
 
@@ -42,6 +47,25 @@ const showStake = async (): Promise<void> => {
     await openEvent();
 
     await openBet();
+
+    const accountRestrictionByMaximumStake = getWorkerParameter(
+      'accountRestrictionByMaximumStake'
+    );
+    if (accountRestrictionByMaximumStake) {
+      const maximumStake = getMaximumStake();
+      if (maximumStake <= 500) {
+        const paused =
+          worker.SetBookmakerPaused && worker.SetBookmakerPaused(true);
+        let message = `В Фонбете максмальная сумма ставки ${maximumStake} <= 500. Считаем что аккаунт порезан\n`;
+        if (paused) {
+          message = `${message}Поставили на паузу`;
+        } else {
+          message = `${message}НЕ удалось поставить на паузу`;
+        }
+        worker.Helper.SendInformedMessage(message);
+        throw new JsFailError(message);
+      }
+    }
 
     log('Ставка успешно открыта', 'green');
     setBetAcceptMode();
