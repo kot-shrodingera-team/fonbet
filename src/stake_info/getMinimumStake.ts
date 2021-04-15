@@ -2,42 +2,44 @@ import getMinimumStakeGenerator, {
   minimumStakeReadyGenerator,
 } from '@kot-shrodingera-team/germes-generators/stake_info/getMinimumStake';
 
+const minimumStakeSelector =
+  '[class*="_min-max"] [class*="info-block__value"]:nth-child(1)';
+// const minimumStakeRegex = /(\d+(?:\.\d+)?)/;
+// const replaceDataArray = [
+//   {
+//     searchValue: '',
+//     replaceValue: '',
+//   },
+// ];
+// const removeRegex = /[\s,']/g;
+
 export const setMinimumStake = (newMinimumStake: number): void => {
-  window.germesData.limits.minimumStake = newMinimumStake;
+  window.germesData.minimumStake = newMinimumStake;
 };
 export const clearMinimumStake = (): void => {
-  window.germesData.limits.minimumStake = undefined;
+  window.germesData.minimumStake = undefined;
 };
 
 export const minimumStakeReady = minimumStakeReadyGenerator({
-  minimumStakeElementSelector:
-    '[class*="_min-max"] [class*="info-block__value"]:nth-child(1)',
-  // minimumStakeRegex: /(\d+(?:\.\d+)?)/,
-  // replaceDataArray: [
-  //   {
-  //     searchValue: '',
-  //     replaceValue: '',
-  //   },
-  // ],
-  // removeRegex: /[\s,']/g,
+  minimumStakeSelector,
+  // minimumStakeRegex,
+  // replaceDataArray,
+  // removeRegex,
+  // context: () => document,
 });
 
 const getMinimumStakeFromCoupon = getMinimumStakeGenerator({
-  minimumStakeElementSelector:
-    '[class*="_min-max"] [class*="info-block__value"]:nth-child(1)',
-  // minimumStakeRegex: /(\d+(?:\.\d+)?)/,
-  // replaceDataArray: [
-  //   {
-  //     searchValue: '',
-  //     replaceValue: '',
-  //   },
-  // ],
-  // removeRegex: /[\s,']/g,
+  minimumStakeSelector,
+  // minimumStakeRegex,
+  // replaceDataArray,
+  // removeRegex,
+  // disableLog: false,
+  // context: () => document,
 });
 
 const getMinimumStake = (): number => {
-  if (typeof window.germesData.limits.minimumStake !== 'undefined') {
-    return window.germesData.limits.minimumStake;
+  if (window.germesData.minimumStake !== undefined) {
+    return window.germesData.minimumStake;
   }
   return getMinimumStakeFromCoupon();
 };

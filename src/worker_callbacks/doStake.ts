@@ -1,8 +1,7 @@
 import { log } from '@kot-shrodingera-team/germes-utils';
 import doStakeGenerator from '@kot-shrodingera-team/germes-generators/worker_callbacks/doStake';
 import getCoefficient from '../stake_info/getCoefficient';
-import { clearDoStakeTime } from '../stake_info/doStakeTime';
-import { accountBlocked } from '../initialization/accountChecks';
+import { accountBlocked } from '../show_stake/helpers/accountChecks';
 
 const preCheck = (): boolean => {
   const errorSpan = document.querySelector(
@@ -16,9 +15,9 @@ const preCheck = (): boolean => {
     }
   }
 
-  const acceptChangesButton = document.querySelector(
+  const acceptChangesButton = document.querySelector<HTMLElement>(
     '[class*="button-accept"][class*="_enabled"]'
-  ) as HTMLElement;
+  );
   if (acceptChangesButton) {
     acceptChangesButton.click();
     log('В купоне были изменения. Принимаем', 'orange');
@@ -94,27 +93,25 @@ const preCheck = (): boolean => {
     window.germesData.currentBet.lastSameBetCount = 0;
   }
 
-  clearDoStakeTime();
   return true;
 };
 
-const postCheck = (): boolean => {
-  window.germesData.betProcessingStep = 'beforeStart';
-  return true;
-};
+// const postCheck = (): boolean => {
+//   return true;
+// };
 
 const doStake = doStakeGenerator({
   preCheck,
   doStakeButtonSelector: '[class*="button"][class*="normal-bet"]',
-  getCoefficient,
-  // disabledCheck: false,
   errorClasses: [
     {
       className: '_disabled--1hdBR',
     },
   ],
-  postCheck,
-  clearDoStakeTime,
+  // disabledCheck: false,
+  getCoefficient,
+  // postCheck,
+  // context: () => document,
 });
 
 export default doStake;

@@ -1,6 +1,5 @@
 import { log } from '@kot-shrodingera-team/germes-utils';
 import getStakeInfoGenerator from '@kot-shrodingera-team/germes-generators/worker_callbacks/getStakeInfo';
-import showStake, { isCouponOpenning } from '../show_stake';
 import checkAuth from '../stake_info/checkAuth';
 import getStakeCount from '../stake_info/getStakeCount';
 import getBalance from '../stake_info/getBalance';
@@ -17,21 +16,22 @@ const preAction = (): boolean => {
   );
 
   if (errorSpan) {
-    log(`Висит ошибка: "${errorSpan.textContent.trim()}"`, 'tan');
-    const errorOkButton = document.querySelector(
+    const errorText = errorSpan.textContent.trim();
+    log(`Висит ошибка: "${errorText}"`, 'crimson');
+    const errorOkButton = document.querySelector<HTMLElement>(
       '[class*="error-box"] [class*="button"]'
-    ) as HTMLElement;
+    );
     if (!errorOkButton) {
-      log('Не найдена кнопка закрытия', 'crimson');
+      log('Не найдена кнопка закрытия ошибки', 'crimson');
       return false;
     }
     errorOkButton.click();
     log('Закрыли ошибку', 'orange');
   }
 
-  const acceptChangesButton = document.querySelector(
+  const acceptChangesButton = document.querySelector<HTMLElement>(
     '[class*="button-accept"][class*="_enabled"]'
-  ) as HTMLElement;
+  );
   if (acceptChangesButton) {
     acceptChangesButton.click();
     log('В купоне были изменения. Принимаем', 'orange');
@@ -42,8 +42,6 @@ const preAction = (): boolean => {
 
 const getStakeInfo = getStakeInfoGenerator({
   preAction,
-  isCouponOpenning,
-  showStake,
   checkAuth,
   getStakeCount,
   getBalance,

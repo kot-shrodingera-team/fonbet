@@ -1,15 +1,15 @@
-import { awaiter, log } from '@kot-shrodingera-team/germes-utils';
-import processCookieModalWindow from './processCookieModalWinow';
-import { checkAccountBlocked, accountBlocked } from './accountChecks';
-import appLoaded from './appLoaded';
+import { awaiter } from '@kot-shrodingera-team/germes-utils';
+import {
+  checkAccountBlocked,
+  accountBlocked,
+} from '../show_stake/helpers/accountChecks';
+import appLoaded from '../show_stake/helpers/checkAppLoaded';
 
 const afterSuccesfulLogin = async (): Promise<void> => {
+  // Сброс флага активности открытия купона, если было какое-то зависание
+  localStorage.setItem('couponOpening', '0');
+
   await awaiter(appLoaded);
-  if (!appLoaded()) {
-    log('API не загрузилось', 'crimson');
-    return;
-  }
-  processCookieModalWindow();
   if (checkAccountBlocked()) {
     accountBlocked();
   }

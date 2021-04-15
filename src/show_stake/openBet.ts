@@ -1,46 +1,57 @@
-import { awaiter, getElement, log } from '@kot-shrodingera-team/germes-utils';
+import {
+  awaiter,
+  getWorkerParameter,
+  log,
+  repeatingOpenBet,
+} from '@kot-shrodingera-team/germes-utils';
+import { JsFailError } from '@kot-shrodingera-team/germes-utils/errors';
+import getMaximumStake from '../stake_info/getMaximumStake';
 import { minimumStakeReady } from '../stake_info/getMinimumStake';
 import getStakeCount from '../stake_info/getStakeCount';
-import JsFailError from './errors/jsFailError';
-import setBetAcceptMode from './setBetAcceptMode';
+import clearCoupon from './clearCoupon';
 
 const openBet = async (): Promise<void> => {
+  const couponCleared = await clearCoupon();
+  if (!couponCleared) {
+    throw new JsFailError('Не удалось очистить купон');
+  }
+
+  // Получение данных из меты
   const factor = Number(worker.BetId);
   if (Number.isNaN(factor)) {
     throw new JsFailError(
-      `Некорректные мета-данные по ставке. Сообщите в ТП id вилки: "${worker.ForkId}"`
+      `Некорректные мета-данные по ставке. Сообщите FID (${worker.ForkId}) в ТП`
     );
   }
 
-  const evnt = await awaiter(
+  // Формирование данных для поиска
+  const eventData = await awaiter(
     () => app.lineManager.findEvent(Number(worker.EventId)),
     5000,
     100
   );
-  if (!evnt) {
-    throw new JsFailError('Событие не найдено');
+  if (!eventData) {
+    throw new JsFailError('Не найдена информация о событии');
   }
 
   // eslint-disable-next-line no-underscore-dangle
-  const line = evnt._factors._factors[factor];
-  if (!line) {
-    throw new JsFailError('Линия не найдена');
+  const lineData = eventData._factors._factors[factor];
+  if (!lineData) {
+    throw new JsFailError('Не найдена информация о линии');
   }
 
-  app.couponManager.newCoupon.newAddStake(
-    'live',
-    'live',
-    evnt.rootId,
-    evnt.id,
-    line.id,
-    line.p
-  );
-
-  const betAdded = await awaiter(() => getStakeCount() === 1);
-  if (!betAdded) {
-    throw new JsFailError('Ставка не попала в купон');
-  }
-  log('Ставка попала в купон', 'steelblue');
+  // Открытие ставки, проверка, что ставка попала в купон
+  const openingAction = async () => {
+    app.couponManager.newCoupon.newAddStake(
+      'live',
+      'live',
+      eventData.rootId,
+      eventData.id,
+      lineData.id,
+      lineData.p
+    );
+  };
+  await repeatingOpenBet(openingAction, getStakeCount, 5, 1000, 50);
 
   const minLoaded = await minimumStakeReady();
   if (!minLoaded) {
@@ -48,7 +59,42 @@ const openBet = async (): Promise<void> => {
   }
   log('Появился минимум', 'steelblue');
 
-  setBetAcceptMode();
+  const eventNameSelector = '[class*="stake-wide"] > [class*="column2--"]';
+  const betNameSelector = '[class*="stake-wide"] > [class*="column3--"]';
+
+  const eventNameElement = document.querySelector(eventNameSelector);
+  const betNameElement = document.querySelector(betNameSelector);
+
+  if (!eventNameElement) {
+    throw new JsFailError('Не найдено событие открытой ставки');
+  }
+  if (!betNameElement) {
+    throw new JsFailError('Не найдена роспись открытой ставки');
+  }
+
+  const eventName = eventNameElement.textContent.trim();
+  const betName = betNameElement.textContent.trim();
+
+  log(`Открыта ставка\n${eventName}\n${betName}`, 'steelblue');
+
+  const accountRestrictionCheckByMaxStake = getWorkerParameter(
+    'accountRestrictionCheckByMaxStake'
+  );
+  if (accountRestrictionCheckByMaxStake) {
+    const maximumStake = getMaximumStake();
+    if (maximumStake <= 500) {
+      const paused =
+        worker.SetBookmakerPaused && worker.SetBookmakerPaused(true);
+      let message = `В Фонбете максмальная сумма ставки ${maximumStake} <= 500. Считаем что аккаунт порезан\n`;
+      if (paused) {
+        message = `${message}Поставили на паузу`;
+      } else {
+        message = `${message}НЕ удалось поставить на паузу`;
+      }
+      worker.Helper.SendInformedMessage(message);
+      throw new JsFailError(message);
+    }
+  }
 };
 
 export default openBet;

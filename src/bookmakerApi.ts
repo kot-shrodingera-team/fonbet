@@ -84,23 +84,34 @@ interface FonbetApi {
 
 declare global {
   const app: FonbetApi;
-  interface Window {
-    germesData: {
-      doStakeTime: Date;
-      betProcessingStep: string;
-      betProcessingAdditionalInfo: string;
-      limits: {
-        minimumStake: number;
-        maximumStake: number;
-      };
+  interface GermesData {
+    minimumStake: number;
+    maximumStake: number;
 
-      currentBet: {
-        eventName: string;
-        betName: string;
-        lastSameBetCount: number;
-      };
+    currentBet: {
+      eventName: string;
+      betName: string;
+      lastSameBetCount: number;
     };
   }
 }
+
+export const clearGermesData = (): void => {
+  window.germesData = {
+    bookmakerName: 'Fonbet',
+    betProcessingStep: undefined,
+    betProcessingAdditionalInfo: undefined,
+    doStakeTime: undefined,
+    betProcessingTimeout: 50000,
+
+    minimumStake: undefined,
+    maximumStake: undefined,
+    currentBet: {
+      eventName: undefined,
+      betName: undefined,
+      lastSameBetCount: undefined,
+    },
+  };
+};
 
 export default {};

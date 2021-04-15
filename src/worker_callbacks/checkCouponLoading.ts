@@ -1,13 +1,15 @@
 import checkCouponLoadingGenerator from '@kot-shrodingera-team/germes-generators/worker_callbacks/checkCouponLoading';
-import { awaiter, getElement, log } from '@kot-shrodingera-team/germes-utils';
-import { accountBlocked } from '../initialization/accountChecks';
-// import JsFailError from '../show_stake/errors/jsFailError';
-// import openBet from '../show_stake/openBet';
-import { getDoStakeTime } from '../stake_info/doStakeTime';
-import { setMaximumStake } from '../stake_info/getMaximumStake';
-import { setMinimumStake } from '../stake_info/getMinimumStake';
+import {
+  awaiter,
+  checkCouponLoadingError,
+  checkCouponLoadingSuccess,
+  getElement,
+  getRemainingTimeout,
+  log,
+} from '@kot-shrodingera-team/germes-utils';
+import { accountBlocked } from '../show_stake/helpers/accountChecks';
 
-const secondsOverlaySelector = '[class*="seconds-overlay"]';
+// const secondsOverlaySelector = '[class*="seconds-overlay"]';
 const errorSpanSelector = '[class*="error-box"] [class*="text-area"]';
 const emptyCouponSelector = '[class*="new-coupon"] > [class*="empty"]';
 
@@ -77,62 +79,37 @@ const checkLastCoupons = (logging = false) => {
   return false;
 };
 
-const asyncCheck = async () => {
-  const error = (message?: string) => {
-    if (message !== undefined) {
-      log(message, 'crimson');
-    }
-    window.germesData.betProcessingStep = 'error';
-  };
-  const success = (message: string) => {
-    log(message, 'steelblue');
-    window.germesData.betProcessingStep = 'success';
-  };
-  // const reopen = async (message: string) => {
-  //   log(message, 'crimson');
-  //   window.germesData.betProcessingStep = 'reopen';
-  //   log('Переоткрываем купон', 'orange');
-  //   try {
-  //     await openBet();
-  //     log('Ставка успешно переоткрыта', 'green');
-  //     window.germesData.betProcessingStep = 'reopened';
-  //   } catch (reopenError) {
-  //     if (reopenError instanceof JsFailError) {
-  //       log(reopenError.message, 'red');
-  //       window.germesData.betProcessingStep = 'error';
-  //     }
-  //   }
-  // };
-  const closeError = () => {
-    const errorOkButton = document.querySelector(
-      '[class*="error-box"] [class*="button"]'
-    ) as HTMLElement;
-    if (!errorOkButton) {
-      log('Не найдена кнопка закрытия ошибки принятия ставки', 'crimson');
-    } else {
-      log('Нажимаем на кнопку закрытия ошибки принятия ставки', 'orange');
-      errorOkButton.click();
-    }
-  };
+const closeError = () => {
+  const errorOkButton = document.querySelector<HTMLElement>(
+    '[class*="error-box"] [class*="button"]'
+  );
+  if (!errorOkButton) {
+    log('Не найдена кнопка закрытия ошибки принятия ставки', 'crimson');
+  } else {
+    log('Нажимаем на кнопку закрытия ошибки принятия ставки', 'orange');
+    errorOkButton.click();
+  }
+};
 
+const asyncCheck = async () => {
   window.germesData.betProcessingStep = 'waitingForAcceptOrError';
+
   log(
     `Ждём принятия ставки ${window.germesData.currentBet.eventName} - ${window.germesData.currentBet.betName}`,
     'steelblue'
   );
 
-  getElement(emptyCouponSelector, 50000).then(() => {
+  getElement(emptyCouponSelector, getRemainingTimeout()).then(() => {
     log('Купон очистился', 'steelblue');
   });
 
-  await Promise.any<boolean | Element>([
-    getElement(errorSpanSelector, 50000),
-    awaiter(() => checkLastCoupons(), 50000, 100),
+  await Promise.race([
+    getElement(errorSpanSelector, getRemainingTimeout()),
+    awaiter(() => checkLastCoupons(), getRemainingTimeout(), 100),
   ]);
 
   const errorSpan = document.querySelector(errorSpanSelector);
   if (errorSpan) {
-    log('Появилась ошибка', 'steelblue');
     const errorSpanText = errorSpan.textContent.trim();
     log(errorSpanText, 'tomato');
 
@@ -142,9 +119,11 @@ const asyncCheck = async () => {
     const maxRegexMatch = errorSpanText.match(maxRegex);
     if (maxRegexMatch) {
       const newMax = Number(maxRegexMatch[1].replace(/\s/g, ''));
-      setMaximumStake(newMax);
+      window.germesData.maximumStake = newMax;
       closeError();
-      return error(`Новый макс: ${newMax}`);
+      return checkCouponLoadingError({
+        botMessage: `Новый макс: ${newMax}`,
+      });
     }
 
     const minMaxRegex = /Допустимая сумма ставки ([\d\s]+) - ([\d\s]+)/i;
@@ -152,47 +131,52 @@ const asyncCheck = async () => {
     if (minMaxRegexMatch) {
       const newMin = Number(maxRegexMatch[1].replace(/\s/g, ''));
       const newMax = Number(maxRegexMatch[2].replace(/\s/g, ''));
-      setMinimumStake(newMin);
-      setMaximumStake(newMax);
+      window.germesData.minimumStake = newMin;
+      window.germesData.maximumStake = newMax;
       closeError();
-      return error(`Новые лимиты: ${newMin} - ${newMax}`);
+      return checkCouponLoadingError({
+        botMessage: `Новые лимиты: ${newMin} - ${newMax}`,
+      });
     }
 
     if (/Нет прав на выполнение операции/i.test(errorSpanText)) {
       accountBlocked();
       closeError();
-      return error('Аккаунт заблокирован');
+      return checkCouponLoadingError({});
     }
 
     if (/Изменена котировка на событие/i.test(errorSpanText)) {
       closeError();
-      return error('Изменена котировка');
+      return checkCouponLoadingError({});
     }
     closeError();
-    return error();
+    return checkCouponLoadingError({});
   }
 
-  if (!checkLastCoupons(true)) {
-    return error();
+  if (checkLastCoupons(true)) {
+    const lastCouponCaption = document.querySelector(
+      '[class*="coupon-list"] article[class*="coupon"] [class*="caption"]'
+    );
+    if (!lastCouponCaption) {
+      log('Не найден заголовок купона', 'crimson');
+    } else {
+      log(lastCouponCaption.textContent.trim(), 'orange');
+    }
+
+    return checkCouponLoadingSuccess('Ставка принята');
   }
 
-  const lastCouponCaption = document.querySelector(
-    '[class*="coupon-list"] article[class*="coupon"] [class*="caption"]'
-  );
-  if (!lastCouponCaption) {
-    log('Не найден заголовок купона', 'crimson');
-  } else {
-    log(lastCouponCaption.textContent.trim(), 'orange');
-  }
-
-  return success('Ставка принята');
+  return checkCouponLoadingError({
+    botMessage: 'Не дождались результата ставки',
+    informMessage: 'Не дождались результата ставки',
+  });
 };
 
 const check = () => {
   const step = window.germesData.betProcessingStep;
-  const secondsOverlay = document.querySelector(secondsOverlaySelector);
-  const seconds = secondsOverlay ? secondsOverlay.textContent.trim() : null;
-  const seccondsText = seconds ? ` (${seconds})` : '';
+  const additionalInfo = window.germesData.betProcessingAdditionalInfo
+    ? ` (${window.germesData.betProcessingAdditionalInfo})`
+    : '';
   switch (step) {
     case 'beforeStart':
       asyncCheck();
@@ -200,18 +184,17 @@ const check = () => {
     case 'error':
     case 'success':
     case 'reopened':
-      log(`Обработка ставки завершена (${step})`, 'orange');
+      log(`Обработка ставки завершена${additionalInfo}`, 'orange');
+      log(step, 'orange', true);
       return false;
     default:
-      log(`Обработка ставки (${step})${seccondsText}`, 'tan');
+      log(`Обработка ставки${additionalInfo}`, 'tan');
+      log(step, 'tan', true);
       return true;
   }
 };
 
 const checkCouponLoading = checkCouponLoadingGenerator({
-  getDoStakeTime,
-  bookmakerName: 'Fonbet',
-  timeout: 50000,
   check,
 });
 

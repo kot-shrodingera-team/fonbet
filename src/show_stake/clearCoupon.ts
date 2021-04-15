@@ -10,16 +10,18 @@ const apiClear = (): void => {
   app.couponManager.newCoupon.clear();
 };
 
+// const postCheck = async (): Promise<boolean> => {
+//   return true;
+// };
+
 const clearCoupon = clearCouponGenerator({
   // preCheck,
   getStakeCount,
   apiClear,
-  clearAllSelector: '',
-  clearSingleSelector: '',
-  clearMode: 'all-only',
-  // maxUnload: {
-  //   getMaximumStake,
-  // },
+  // clearAllSelector: '',
+  // clearSingleSelector: '',
+  // postCheck,
+  // context: () => document,
 });
 
 export default clearCoupon;

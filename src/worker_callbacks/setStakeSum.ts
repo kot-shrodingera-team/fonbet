@@ -1,17 +1,19 @@
 import setStakeSumGenerator from '@kot-shrodingera-team/germes-generators/worker_callbacks/setStakeSum';
+import { sumInputSelector } from '../stake_info/getCurrentSum';
 
 // const preInputCheck = (sum: number): boolean => {
 //   return true;
 // };
 
 const setStakeSum = setStakeSumGenerator({
-  sumInputSelector: 'input[class*="sum-panel__input"]',
+  sumInputSelector,
   alreadySetCheck: {
     falseOnSumChange: false,
   },
-  inputType: 'react',
-  // fireEventName: 'input',
   // preInputCheck,
+  inputType: 'react',
+  // fireEventNames: ['input'],
+  // context: () => document,
 });
 
 export default setStakeSum;

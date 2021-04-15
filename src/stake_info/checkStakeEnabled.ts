@@ -2,7 +2,7 @@ import checkStakeEnabledGenerator from '@kot-shrodingera-team/germes-generators/
 import {
   accountBlocked,
   checkAccountBlocked,
-} from '../initialization/accountChecks';
+} from '../show_stake/helpers/accountChecks';
 import getStakeCount from './getStakeCount';
 
 const preCheck = (): boolean => {
@@ -31,6 +31,7 @@ const checkStakeEnabled = checkStakeEnabledGenerator({
       // message: '',
     },
   ],
+  // context: () => document,
 });
 
 export default checkStakeEnabled;

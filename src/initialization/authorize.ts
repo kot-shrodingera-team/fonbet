@@ -1,4 +1,5 @@
 import authorizeGenerator from '@kot-shrodingera-team/germes-generators/initialization/authorize';
+import { authElementSelector } from '../stake_info/checkAuth';
 import { balanceReady, updateBalance } from '../stake_info/getBalance';
 import afterSuccesfulLogin from './afterSuccesfulLogin';
 
@@ -23,11 +24,13 @@ const authorize = authorizeGenerator({
   // beforeSubmitDelay: 0,
   // captchaSelector: '',
   loginedWait: {
+    loginedSelector: authElementSelector,
+    timeout: 5000,
     balanceReady,
-    loginedSelector: '.header__login-label',
     updateBalance,
+    afterSuccesfulLogin,
   },
-  afterSuccesfulLogin,
+  context: () => document,
 });
 
 export default authorize;

@@ -1,6 +1,21 @@
-import { log, correctScoreParameter } from '@kot-shrodingera-team/germes-utils';
+import {
+  log,
+  correctScoreParameter,
+  getWorkerParameter,
+} from '@kot-shrodingera-team/germes-utils';
 
 const getParameter = (): number => {
+  if (
+    getWorkerParameter('fakeParameter') ||
+    getWorkerParameter('fakeOpenStake')
+  ) {
+    const parameter = Number(JSON.parse(worker.ForkObj).param);
+    if (Number.isNaN(parameter)) {
+      return -6666;
+    }
+    return parameter;
+  }
+
   if (
     typeof app === 'undefined' ||
     !app.couponManager ||
@@ -12,9 +27,9 @@ const getParameter = (): number => {
     return -9999;
   }
   const parameterString = app.couponManager.newCoupon.stakes[0].pt;
-  const parameter = Number(app.couponManager.newCoupon.stakes[0].pt);
+  const parameter = Number(parameterString);
 
-  if (typeof parameterString !== 'undefined') {
+  if (parameterString !== undefined) {
     if (Number.isNaN(parameter)) {
       log(
         `Ошибка определения параметра: некорректный формат параметра: "${parameter}"`,
