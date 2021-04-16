@@ -46,7 +46,7 @@ const getMaximumStake = (): number => {
   if (worker.Currency === 'RUR') {
     if (maximumStakeFromCoupon >= 200) {
       log(
-        'Считаем максимальную ставку на 100 рубелй меньше отображаемой',
+        'Считаем максимальную ставку на 100 рублей меньше отображаемой',
         'steelblue'
       );
       return maximumStakeFromCoupon - 100;
