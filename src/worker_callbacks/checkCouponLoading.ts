@@ -81,7 +81,7 @@ const checkLastCoupons = (logging = false) => {
 
 const closeError = () => {
   const errorOkButton = document.querySelector<HTMLElement>(
-    '[class*="error-box"] [class*="button"]'
+    '[class*="error-box--"] > [class*="button-area--"] > [class*="button--"]'
   );
   if (!errorOkButton) {
     log('Не найдена кнопка закрытия ошибки принятия ставки', 'crimson');

@@ -19,7 +19,7 @@ const preAction = (): boolean => {
     const errorText = errorSpan.textContent.trim();
     log(`Висит ошибка: "${errorText}"`, 'crimson');
     const errorOkButton = document.querySelector<HTMLElement>(
-      '[class*="error-box"] [class*="button"]'
+      '[class*="error-box--"] > [class*="button-area--"] > [class*="button--"]'
     );
     if (!errorOkButton) {
       log('Не найдена кнопка закрытия ошибки', 'crimson');
