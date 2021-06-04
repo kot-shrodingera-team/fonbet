@@ -99,8 +99,10 @@ const asyncCheck = async () => {
     'steelblue'
   );
 
-  getElement(emptyCouponSelector, getRemainingTimeout()).then(() => {
-    log('Купон очистился', 'steelblue');
+  getElement(emptyCouponSelector, getRemainingTimeout()).then((emptyCoupon) => {
+    if (emptyCoupon) {
+      log('Купон очистился', 'steelblue');
+    }
   });
 
   await Promise.race([
