@@ -35,7 +35,20 @@ const openBet = async (): Promise<void> => {
   }
 
   // eslint-disable-next-line no-underscore-dangle
-  const lineData = eventData._factors._factors[factor];
+  // const lineData = eventData._factors._factors[factor];
+
+  /* eslint-disable no-underscore-dangle */
+  const lineData = await awaiter(() => {
+    if (
+      !eventData._factors ||
+      !eventData._factors._factors ||
+      !eventData._factors._factors[factor]
+    ) {
+      return null;
+    }
+    return eventData._factors._factors[factor];
+  });
+  /* eslint-enable no-underscore-dangle */
   if (!lineData) {
     throw new JsFailError('Не найдена информация о линии');
   }
