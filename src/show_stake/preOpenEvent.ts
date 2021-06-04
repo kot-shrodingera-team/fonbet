@@ -51,7 +51,6 @@ const preOpenEvent = async (): Promise<void> => {
     const liveButton = document.querySelector<HTMLElement>('[href="/live"]');
     if (!liveButton) {
       log('Не найдена кнопка перехода на лайв', 'crimson');
-      log('Переходим на лайв по URL', 'orange');
       window.location.href = new URL('/live', worker.BookmakerMainUrl).href;
       throw new NewUrlError('Переходим на лайв по URL');
     }
