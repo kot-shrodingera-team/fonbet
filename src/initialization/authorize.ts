@@ -9,7 +9,7 @@ import afterSuccesfulLogin from './afterSuccesfulLogin';
 
 const authorize = authorizeGenerator({
   openForm: {
-    selector: '.header__login-head a.header__link',
+    selector: '.header__login-head a.header-btn',
     openedSelector: '#auth_form',
     // loopCount: 10,
     // triesInterval: 1000,
