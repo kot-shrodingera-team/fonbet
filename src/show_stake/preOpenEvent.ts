@@ -25,6 +25,17 @@ const preOpenEvent = async (): Promise<void> => {
   if (!appLoaded) {
     throw new JsFailError('API не загрузилось');
   }
+
+  await authStateReady();
+  worker.Islogin = checkAuth();
+  worker.JSLogined();
+  if (!worker.Islogin) {
+    throw new JsFailError('Нет авторизации');
+  }
+  log('Есть авторизация', 'steelblue');
+  await balanceReady();
+  updateBalance();
+
   if (checkAccountBlocked()) {
     accountBlocked();
     throw new JsFailError('accountBlocked');
@@ -60,16 +71,6 @@ const preOpenEvent = async (): Promise<void> => {
       throw new JsFailError('API не загрузилось');
     }
   }
-
-  await authStateReady();
-  worker.Islogin = checkAuth();
-  worker.JSLogined();
-  if (!worker.Islogin) {
-    throw new JsFailError('Нет авторизации');
-  }
-  log('Есть авторизация', 'steelblue');
-  await balanceReady();
-  updateBalance();
 };
 
 export default preOpenEvent;
