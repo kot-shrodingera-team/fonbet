@@ -24,8 +24,16 @@ const setBetAcceptMode = async (): Promise<boolean> => {
     set.takeUpBets = true;
     set.takeChangedBets = true;
   }
-  app.settingsApply(set, 'takeUpBets');
-  app.settingsApply(set, 'takeChangedBets');
+  try {
+    app.settingsApply(set, 'takeUpBets');
+  } catch {
+    //
+  }
+  try {
+    app.settingsApply(set, 'takeChangedBets');
+  } catch {
+    //
+  }
   return true;
 };
 
