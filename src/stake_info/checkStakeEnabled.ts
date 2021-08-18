@@ -30,6 +30,11 @@ const checkStakeEnabled = checkStakeEnabledGenerator({
       selector: '[class*="overlay-unavailable"]',
       // message: '',
     },
+    {
+      selector:
+        'tr[class*="stake-wide--"] > td[class*="column2--"][class*="_blocked--"]',
+      message: 'заблокирована',
+    },
   ],
   // context: () => document,
 });
