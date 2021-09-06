@@ -11,6 +11,10 @@ import getStakeCount from '../stake_info/getStakeCount';
 import clearCoupon from './clearCoupon';
 
 const openBet = async (): Promise<void> => {
+  worker.TakeScreenShot(false);
+  // Поймать случай, когда определяется, что купон пуст, но это не так
+  // В итоге новая стака добавляется в купон, потом убирается, и остаётся только старая
+
   const couponCleared = await clearCoupon();
   if (!couponCleared) {
     throw new JsFailError('Не удалось очистить купон');
