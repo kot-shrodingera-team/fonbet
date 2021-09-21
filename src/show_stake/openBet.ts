@@ -1,5 +1,4 @@
 import {
-  awaiter,
   getWorkerParameter,
   log,
   repeatingOpenBet,
@@ -15,66 +14,55 @@ const openBet = async (): Promise<void> => {
   // Поймать случай, когда определяется, что купон пуст, но это не так
   // В итоге новая стака добавляется в купон, потом убирается, и остаётся только старая
 
+  /* ======================================================================== */
+  /*                              Очистка купона                              */
+  /* ======================================================================== */
+
   const couponCleared = await clearCoupon();
   if (!couponCleared) {
     throw new JsFailError('Не удалось очистить купон');
   }
 
-  // Получение данных из меты
-  const factor = Number(worker.BetId);
-  if (Number.isNaN(factor)) {
-    throw new JsFailError(
-      `Некорректные мета-данные по ставке. Сообщите FID (${worker.ForkId}) в ТП`
-    );
-  }
+  /* ======================================================================== */
+  /*                      Формирование данных для поиска                      */
+  /* ======================================================================== */
 
-  // Формирование данных для поиска
-  const eventData = await awaiter(
-    () => app.lineManager.findEvent(Number(worker.EventId)),
-    5000,
-    100
-  );
-  if (!eventData) {
-    throw new JsFailError('Не найдена информация о событии');
-  }
+  const eventRootId = Number(worker.EventId);
+  const {
+    subevent_id: eventId,
+    factor_id: lineId,
+    p: lineP,
+  } = JSON.parse(worker.BetId);
 
-  // eslint-disable-next-line no-underscore-dangle
-  // const lineData = eventData._factors._factors[factor];
+  /* ======================================================================== */
+  /*           Открытие ставки, проверка, что ставка попала в купон           */
+  /* ======================================================================== */
 
-  /* eslint-disable no-underscore-dangle */
-  const lineData = await awaiter(() => {
-    if (
-      !eventData._factors ||
-      !eventData._factors._factors ||
-      !eventData._factors._factors[factor]
-    ) {
-      return null;
-    }
-    return eventData._factors._factors[factor];
-  });
-  /* eslint-enable no-underscore-dangle */
-  if (!lineData) {
-    throw new JsFailError('Не найдена информация о линии');
-  }
-
-  // Открытие ставки, проверка, что ставка попала в купон
   const openingAction = async () => {
     app.couponManager.newCoupon.newAddStake(
       'live',
       'live',
-      eventData.rootId,
-      eventData.id,
-      lineData.id,
-      lineData.p
+      eventRootId,
+      Number(eventId),
+      Number(lineId),
+      typeof lineP !== 'undefined' ? Number(lineP) * 100 : undefined
     );
   };
   await repeatingOpenBet(openingAction, getStakeCount, 5, 1000, 50);
+
+  /* ======================================================================== */
+  /*                        Ожидание минимальной ставки                       */
+  /* ======================================================================== */
 
   const minLoaded = await minimumStakeReady();
   if (!minLoaded) {
     throw new JsFailError('Минимум не появился');
   }
   log('Появился минимум', 'steelblue');
+
+  /* ======================================================================== */
+  /*                    Вывод информации об открытой ставке                   */
+  /* ======================================================================== */
 
   const eventNameSelector = '[class*="stake-wide"] > [class*="column2--"]';
   const betNameSelector = '[class*="stake-wide"] > [class*="column3--"]';
@@ -93,6 +81,10 @@ const openBet = async (): Promise<void> => {
   const betName = betNameElement.textContent.trim();
 
   log(`Открыта ставка\n${eventName}\n${betName}`, 'steelblue');
+
+  /* ======================================================================== */
+  /*                  Проверка пореза по максимальной ставке                  */
+  /* ======================================================================== */
 
   const accountRestrictionCheckByMaxStake = getWorkerParameter(
     'accountRestrictionCheckByMaxStake'

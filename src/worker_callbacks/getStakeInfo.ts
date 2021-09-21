@@ -1,14 +1,19 @@
-import { log } from '@kot-shrodingera-team/germes-utils';
 import getStakeInfoGenerator from '@kot-shrodingera-team/germes-generators/worker_callbacks/getStakeInfo';
+import { log } from '@kot-shrodingera-team/germes-utils';
 import checkAuth from '../stake_info/checkAuth';
 import getStakeCount from '../stake_info/getStakeCount';
 import getBalance from '../stake_info/getBalance';
-import getMinimumStake from '../stake_info/getMinimumStake';
-import getMaximumStake from '../stake_info/getMaximumStake';
-import getCurrentSum from '../stake_info/getCurrentSum';
 import checkStakeEnabled from '../stake_info/checkStakeEnabled';
 import getCoefficient from '../stake_info/getCoefficient';
 import getParameter from '../stake_info/getParameter';
+import getMinimumStake from '../stake_info/getMinimumStake';
+import getMaximumStake from '../stake_info/getMaximumStake';
+import getCurrentSum from '../stake_info/getCurrentSum';
+import showStake from '../show_stake';
+
+const isReShowStakeNeeded = () => {
+  return false;
+};
 
 const preAction = (): boolean => {
   const errorSpan = document.querySelector(
@@ -41,6 +46,10 @@ const preAction = (): boolean => {
 };
 
 const getStakeInfo = getStakeInfoGenerator({
+  reShowStake: {
+    isNeeded: isReShowStakeNeeded,
+    showStake,
+  },
   preAction,
   checkAuth,
   getStakeCount,

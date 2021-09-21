@@ -1,7 +1,7 @@
 import { log } from '@kot-shrodingera-team/germes-utils';
 import doStakeGenerator from '@kot-shrodingera-team/germes-generators/worker_callbacks/doStake';
 import getCoefficient from '../stake_info/getCoefficient';
-import { accountBlocked } from '../show_stake/helpers/accountChecks';
+import { accountBlocked } from '../helpers/accountChecks';
 
 const preCheck = (): boolean => {
   const errorSpan = document.querySelector(
@@ -106,6 +106,7 @@ const doStake = doStakeGenerator({
   errorClasses: [
     {
       className: '_disabled--1hdBR',
+      // message: '',
     },
   ],
   // disabledCheck: false,

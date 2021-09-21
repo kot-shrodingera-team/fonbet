@@ -1,8 +1,5 @@
 import checkStakeEnabledGenerator from '@kot-shrodingera-team/germes-generators/stake_info/checkStakeEnabled';
-import {
-  accountBlocked,
-  checkAccountBlocked,
-} from '../show_stake/helpers/accountChecks';
+import { accountBlocked, checkAccountBlocked } from '../helpers/accountChecks';
 import getStakeCount from './getStakeCount';
 
 const preCheck = (): boolean => {

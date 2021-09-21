@@ -1,9 +1,6 @@
 import { awaiter } from '@kot-shrodingera-team/germes-utils';
-import {
-  checkAccountBlocked,
-  accountBlocked,
-} from '../show_stake/helpers/accountChecks';
-import appLoaded from '../show_stake/helpers/checkAppLoaded';
+import { checkAccountBlocked, accountBlocked } from '../helpers/accountChecks';
+import appLoaded from '../helpers/checkAppLoaded';
 
 const afterSuccesfulLogin = async (): Promise<void> => {
   // Сброс флага активности открытия купона, если было какое-то зависание

@@ -1,25 +1,52 @@
-import { log } from '@kot-shrodingera-team/germes-utils';
+import getStakeInfoValueGenerator from '@kot-shrodingera-team/germes-generators/stake_info/getStakeInfoValue';
+import { StakeInfoValueOptions } from '@kot-shrodingera-team/germes-generators/stake_info/types';
+import { getWorkerParameter, log } from '@kot-shrodingera-team/germes-utils';
+// import getCoefficient from '../stake_info/getCoefficient';
+
+// const getResultCoefficientText = (): string => {
+//   return null;
+// };
+
+export const resultCoefficientSelector =
+  '.coupon__table-stake--rkHNN, .coupon__info-item--3IfP_[title="Общий коэффициент"] .coupon__info-text--WpI3L';
+
+const resultCoefficientOptions: StakeInfoValueOptions = {
+  name: 'coefficient',
+  // fixedValue: () => 0,
+  valueFromText: {
+    text: {
+      // getText: getResultCoefficientText,
+      selector: resultCoefficientSelector,
+      // context: () => document,
+    },
+    // replaceDataArray: [
+    //   {
+    //     searchValue: '',
+    //     replaceValue: '',
+    //   },
+    // ],
+    // removeRegex: /[\s,']/g,
+    // matchRegex: /(\d+(?:\.\d+)?)/,
+    errorValue: 0,
+  },
+  // zeroValues: [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // modifyValue: (value: number, extractType: string) => value,
+  // disableLog: false,
+};
+
+const getResultCoefficient = getStakeInfoValueGenerator(
+  resultCoefficientOptions
+);
+
+// const getResultCoefficient = getCoefficient;
 
 const afterSuccesfulStake = (): void => {
-  const lastStakeCoefficient = document.querySelector(
-    '.coupon__table-stake--rkHNN, .coupon__info-item--3IfP_[title="Общий коэффициент"] .coupon__info-text--WpI3L'
-  );
-  if (!lastStakeCoefficient) {
-    log(
-      'Ошибка обновления коэффициента после успешной ставки: не найден коеффициент последней ставки',
-      'crimson'
-    );
+  if (getWorkerParameter('fakeDoStake')) {
     return;
   }
-  const resultCoefficientText = lastStakeCoefficient.textContent.trim();
-  const resultCoefficient = Number(resultCoefficientText);
-  if (Number.isNaN(resultCoefficient)) {
-    log(
-      `Ошибка обновления коэффициента после успешной ставки: непонятный формат коэффициента: "${resultCoefficientText}"`,
-      'crimson'
-    );
-    return;
-  }
+  log('Обновление итогового коэффициента', 'steelblue');
+  const resultCoefficient = getResultCoefficient();
   if (resultCoefficient !== worker.StakeInfo.Coef) {
     log(
       `Коеффициент изменился: ${worker.StakeInfo.Coef} => ${resultCoefficient}`,

@@ -1,6 +1,6 @@
 import { log } from '@kot-shrodingera-team/germes-utils';
 
-const setBetAcceptMode = async (): Promise<boolean> => {
+const setBetAcceptMode = async (): Promise<void> => {
   const set = app.headerApi.settings();
   if (worker.StakeAcceptRuleShoulder === 0) {
     log(
@@ -34,7 +34,6 @@ const setBetAcceptMode = async (): Promise<boolean> => {
   } catch {
     //
   }
-  return true;
 };
 
 export default setBetAcceptMode;

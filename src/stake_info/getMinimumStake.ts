@@ -1,47 +1,39 @@
-import getMinimumStakeGenerator, {
-  minimumStakeReadyGenerator,
-} from '@kot-shrodingera-team/germes-generators/stake_info/getMinimumStake';
+import getStakeInfoValueGenerator, {
+  stakeInfoValueReadyGenerator,
+} from '@kot-shrodingera-team/germes-generators/stake_info/getStakeInfoValue';
+import { StakeInfoValueOptions } from '@kot-shrodingera-team/germes-generators/stake_info/types';
 
-const minimumStakeSelector =
+export const minimumStakeSelector =
   '[class*="_min-max"] [class*="info-block__value"]:nth-child(1)';
-// const minimumStakeRegex = /(\d+(?:\.\d+)?)/;
-// const replaceDataArray = [
-//   {
-//     searchValue: '',
-//     replaceValue: '',
-//   },
-// ];
-// const removeRegex = /[\s,']/g;
 
-export const setMinimumStake = (newMinimumStake: number): void => {
-  window.germesData.minimumStake = newMinimumStake;
+const minimumStakeOptions: StakeInfoValueOptions = {
+  name: 'minimumStake',
+  // fixedValue: () => 0,
+  valueFromText: {
+    text: {
+      // getText: () => '',
+      selector: minimumStakeSelector,
+      context: () => document,
+    },
+    replaceDataArray: [
+      {
+        searchValue: '',
+        replaceValue: '',
+      },
+    ],
+    removeRegex: /[\s,']/g,
+    matchRegex: /(\d+(?:\.\d+)?)/,
+    errorValue: 0,
+  },
+  zeroValues: [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  modifyValue: (value: number, extractType: string) => value,
+  disableLog: false,
 };
-export const clearMinimumStake = (): void => {
-  window.germesData.minimumStake = undefined;
-};
 
-export const minimumStakeReady = minimumStakeReadyGenerator({
-  minimumStakeSelector,
-  // minimumStakeRegex,
-  // replaceDataArray,
-  // removeRegex,
-  // context: () => document,
-});
+const getMinimumStake = getStakeInfoValueGenerator(minimumStakeOptions);
 
-const getMinimumStakeFromCoupon = getMinimumStakeGenerator({
-  minimumStakeSelector,
-  // minimumStakeRegex,
-  // replaceDataArray,
-  // removeRegex,
-  // disableLog: false,
-  // context: () => document,
-});
-
-const getMinimumStake = (): number => {
-  if (window.germesData.minimumStake !== undefined) {
-    return window.germesData.minimumStake;
-  }
-  return getMinimumStakeFromCoupon();
-};
+export const minimumStakeReady =
+  stakeInfoValueReadyGenerator(minimumStakeOptions);
 
 export default getMinimumStake;
