@@ -2,7 +2,7 @@ import getStakeInfoValueGenerator, {
   stakeInfoValueReadyGenerator,
 } from '@kot-shrodingera-team/germes-generators/stake_info/getStakeInfoValue';
 import { StakeInfoValueOptions } from '@kot-shrodingera-team/germes-generators/stake_info/types';
-import { log } from '@kot-shrodingera-team/germes-utils';
+// import { log } from '@kot-shrodingera-team/germes-utils';
 // import getBalance from './getBalance';
 
 export const maximumStakeSelector =
@@ -32,10 +32,10 @@ const maximumStakeOptions: StakeInfoValueOptions = {
   modifyValue: (value: number, extractType: string) => {
     if (worker.Currency === 'RUR') {
       if (value >= 200) {
-        log(
-          'Считаем максимальную ставку на 100 рублей меньше отображаемой',
-          'steelblue'
-        );
+        // log(
+        //   'Считаем максимальную ставку на 100 рублей меньше отображаемой',
+        //   'steelblue'
+        // );
         return value - 100;
       }
     }
