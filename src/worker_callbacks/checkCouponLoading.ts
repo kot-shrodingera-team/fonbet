@@ -133,6 +133,13 @@ const asyncCheck = async () => {
           return;
         }
 
+        if (/Слишком частые ставки на событие/i.test(errorText)) {
+          closeError();
+          checkCouponLoadingError({});
+          machine.end = true;
+          return;
+        }
+
         worker.Helper.SendInformedMessage(errorText);
         sendTGBotMessage(
           '1786981726:AAE35XkwJRsuReonfh1X2b8E7k9X4vknC_s',
