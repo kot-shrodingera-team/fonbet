@@ -10,10 +10,6 @@ import getStakeCount from '../stake_info/getStakeCount';
 import clearCoupon from './clearCoupon';
 
 const openBet = async (): Promise<void> => {
-  worker.TakeScreenShot(false);
-  // Поймать случай, когда определяется, что купон пуст, но это не так
-  // В итоге новая стака добавляется в купон, потом убирается, и остаётся только старая
-
   /* ======================================================================== */
   /*                              Очистка купона                              */
   /* ======================================================================== */
@@ -48,7 +44,7 @@ const openBet = async (): Promise<void> => {
       typeof lineP !== 'undefined' ? Number(lineP) * 100 : undefined
     );
   };
-  await repeatingOpenBet(openingAction, getStakeCount, 5, 1000, 50);
+  await repeatingOpenBet(openingAction, getStakeCount, 1, 1000, 50);
 
   /* ======================================================================== */
   /*                        Ожидание минимальной ставки                       */
