@@ -4,6 +4,7 @@ import {
   repeatingOpenBet,
 } from '@kot-shrodingera-team/germes-utils';
 import { JsFailError } from '@kot-shrodingera-team/germes-utils/errors';
+import getCoefficient from '../stake_info/getCoefficient';
 import getMaximumStake from '../stake_info/getMaximumStake';
 import { minimumStakeReady } from '../stake_info/getMinimumStake';
 import getStakeCount from '../stake_info/getStakeCount';
@@ -98,6 +99,26 @@ const openBet = async (): Promise<void> => {
       }
       worker.Helper.SendInformedMessage(message);
       throw new JsFailError(message);
+    }
+  }
+
+  /* ======================================================================== */
+  /*                           Проверка коэффициента                          */
+  /* ======================================================================== */
+
+  const coefficientDropCheck = getWorkerParameter('coefficientDropCheck');
+  if (coefficientDropCheck) {
+    const currentCoefficient = getCoefficient();
+    const { coefficient: forkCoefficient } = JSON.parse(worker.ForkObj);
+    if (!forkCoefficient) {
+      throw new JsFailError('Не удалось получить коэффициент из вилки');
+    }
+    log(
+      `Коэффициент: ${forkCoefficient} => ${currentCoefficient}`,
+      'steelblue'
+    );
+    if (currentCoefficient < forkCoefficient) {
+      throw new JsFailError('Коэффициент упал');
     }
   }
 };
