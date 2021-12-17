@@ -4,9 +4,6 @@ export const checkAccountBlocked = (): boolean => {
   if (getWorkerParameter('dontCheckBlocked') === true) {
     return false;
   }
-  if (worker.GetSessionData('FonbetCheck') === 'false') {
-    return false;
-  }
   return app.session.attributes.liveBlocked;
 };
 
